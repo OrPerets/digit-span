@@ -3,5 +3,8 @@
     "api/**/*.js": {
       "maxDuration": 50
     }
-  }
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "public": true
 } 

@@ -22,7 +22,7 @@
     "start": "react-scripts start",
     "server": "PORT=3001 node server.js",
     "dev": "concurrently \"npm run server\" \"npm start\"",
-    "build": "react-scripts build",
+    "build": "react-scripts build && node deploy-audio.js",
     "vercel-dev": "vercel dev",
     "deploy": "vercel --prod",
     "test": "react-scripts test",

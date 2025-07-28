@@ -50,6 +50,10 @@ export const playBackgroundMusic = () => {
         // Handle any errors that occur during playback
         if (error.name === 'AbortError') {
           console.log('🎵 AudioUtils: Playback was aborted, this is expected during rapid phase changes');
+        } else if (error.name === 'NotSupportedError' || error.message.includes('404')) {
+          console.warn('🎵 AudioUtils: Audio file not found or not supported. Audio files may not be deployed.');
+          console.warn('🎵 AudioUtils: Please ensure audio files are in public/dudu/ directory for local development.');
+          console.warn('🎵 AudioUtils: For deployment, follow the instructions in AUDIO_DEPLOYMENT.md');
         } else {
           console.error('🎵 AudioUtils: ❌ Error playing background music:', error);
         }
