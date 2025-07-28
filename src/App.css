@@ -1,5 +1,21 @@
+/* RTL Support for Hebrew */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  direction: rtl;
+  text-align: right;
+}
+
 .App {
   text-align: center;
+  direction: rtl;
 }
 
 .App-logo {
@@ -22,10 +38,33 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  direction: rtl;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+/* RTL-specific button styles */
+button {
+  font-family: inherit;
+  direction: rtl;
+}
+
+/* RTL-specific input styles */
+input, textarea {
+  font-family: inherit;
+}
+
+/* Make sure Hebrew text displays properly */
+h1, h2, h3, h4, h5, h6, p, div, span {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Center-aligned content should remain centered */
+.App h1, .App p, .App button {
+  text-align: center;
 }
 
 @keyframes App-logo-spin {
