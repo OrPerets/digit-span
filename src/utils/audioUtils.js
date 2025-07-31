@@ -13,8 +13,12 @@ export const playBackgroundMusic = () => {
   const randomTrack = Math.floor(Math.random() * 5) + 1;
   console.log(`🎵 AudioUtils: Selected track ${randomTrack}`);
   
-  // Use GitHub Releases CDN for deployed audio files
-  const audio = new Audio(`https://github.com/OrPerets/digit-span/releases/download/audio-v1/${randomTrack}.wav`);
+  // Use GitHub Releases CDN for deployed audio files, fallback to local for development
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const audioUrl = isLocalhost 
+    ? `/dudu/${randomTrack}.wav`
+    : `https://github.com/OrPerets/digit-span/releases/download/audio-v1/${randomTrack}.wav`;
+  const audio = new Audio(audioUrl);
   audio.setAttribute('data-background-music', 'true'); // Add attribute to identify background music
   audio.loop = true;
   audio.volume = 0.5; // Set volume to 50%
