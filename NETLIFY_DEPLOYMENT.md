@@ -114,6 +114,14 @@ If you need to set environment variables in Netlify:
 2. Add any required variables
 3. Redeploy the site
 
+### Backend Configuration
+To connect to a MongoDB backend server:
+1. Set `REACT_APP_API_URL` to your backend server URL
+2. Example: `https://your-backend-server.herokuapp.com`
+3. See `BACKEND_CONFIGURATION.md` for detailed instructions
+
+**Note**: The app works perfectly without a backend in local-only mode.
+
 ## Performance Optimization
 - Audio files are cached for 1 year
 - Static assets are optimized during build

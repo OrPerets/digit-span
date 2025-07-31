@@ -1,6 +1,6 @@
 // Determine the API URL based on the current environment
 const baseUrl = process.env.NODE_ENV === 'production' 
-  ? ''  // Use relative URLs in production since API and frontend are on the same domain
+  ? process.env.REACT_APP_API_URL || ''  // Use environment variable or empty for local-only mode
   : 'http://localhost:3001';
 
 console.log('Using API URL:', baseUrl || 'relative (same domain)');
@@ -22,6 +22,12 @@ console.log('Using API URL:', baseUrl || 'relative (same domain)');
  */
 
 export const initializeExperiment = async (data) => {
+  // If no backend URL is configured, skip backend initialization
+  if (!baseUrl) {
+    console.log('No backend URL configured, skipping backend initialization');
+    return { success: true, localOnly: true };
+  }
+
   try {
     const response = await fetch(`${baseUrl}/api/experiments/init`, {
       method: 'POST',
@@ -44,6 +50,12 @@ export const initializeExperiment = async (data) => {
 };
 
 export const saveTaskResult = async (taskData) => {
+  // If no backend URL is configured, skip backend saving
+  if (!baseUrl) {
+    console.log('No backend URL configured, skipping backend task save');
+    return { success: true, localOnly: true };
+  }
+
   try {
     const response = await fetch(`${baseUrl}/api/tasks`, {
       method: 'POST',
@@ -66,6 +78,12 @@ export const saveTaskResult = async (taskData) => {
 };
 
 export const completeExperiment = async (experimentData) => {
+  // If no backend URL is configured, skip backend completion
+  if (!baseUrl) {
+    console.log('No backend URL configured, skipping backend experiment completion');
+    return { success: true, localOnly: true };
+  }
+
   try {
     const response = await fetch(`${baseUrl}/api/experiments/complete`, {
       method: 'POST',
@@ -88,6 +106,14 @@ export const completeExperiment = async (experimentData) => {
 };
 
 export const getNextSequence = async () => {
+  // If no backend URL is configured, use local randomization
+  if (!baseUrl) {
+    console.log('No backend URL configured, using local sequence randomization');
+    const sequences = ['A', 'B'];
+    const randomSequence = sequences[Math.floor(Math.random() * sequences.length)];
+    return { sequence: randomSequence };
+  }
+
   try {
     const response = await fetch(`${baseUrl}/api/sequences/next`, {
       method: 'GET',

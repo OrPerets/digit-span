@@ -28,3 +28,6 @@ yarn-error.log*
 
 # audio files
 public/dudu/*.wav
+
+# Local Netlify folder
+.netlify
