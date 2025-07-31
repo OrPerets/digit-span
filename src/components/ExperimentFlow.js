@@ -469,10 +469,29 @@ const ExperimentFlow = () => {
     console.log('Transition complete button clicked');
     setIsInTransition(false); // Exit transition mode
     setShowTransition(false);
-    setShowInstructions(true); // Show instructions for next condition
-    setStage('instructions'); // Now safe to set stage
-    console.log('Set isInTransition=false, showTransition=false, showInstructions=true');
-  }, []);
+    
+    // For the second task (index 1), skip instructions and go directly to task
+    if (currentTaskIndex === 1) {
+      console.log('Second task - skipping instructions, going directly to task');
+      setShowInstructions(false);
+      setStage('tasks');
+      
+      // Start music immediately if needed for second task
+      if (!sequence || !DIGIT_SPAN_SEQUENCES[sequence]) return;
+      const currentCondition = DIGIT_SPAN_SEQUENCES[sequence][currentTaskIndex];
+      if (currentCondition.withMusic) {
+        console.log('Starting background music immediately for second task:', currentCondition.condition);
+        const audio = playBackgroundMusic();
+        setBackgroundAudio(audio);
+      }
+    } else {
+      // For first task, show instructions as usual
+      setShowInstructions(true);
+      setStage('instructions');
+    }
+    
+    console.log('Set isInTransition=false, showTransition=false, currentTaskIndex:', currentTaskIndex);
+  }, [currentTaskIndex, sequence, setBackgroundAudio]);
 
   // Handle starting a specific task condition
   const startTaskCondition = useCallback(() => {
@@ -626,8 +645,7 @@ const ExperimentFlow = () => {
               margin: 0
             }}>
               {nextCondition.withMusic ? 
-                "במהלך החלק הבא תישמע מוזיקת רקע" : 
-                "החלק הבא יתבצע בשקט מוחלט"
+                "": ""
               }
             </p>
           </div>
