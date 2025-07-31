@@ -13,7 +13,8 @@ export const playBackgroundMusic = () => {
   const randomTrack = Math.floor(Math.random() * 5) + 1;
   console.log(`🎵 AudioUtils: Selected track ${randomTrack}`);
   
-  const audio = new Audio(`/dudu/${randomTrack}.wav`);
+  // Use GitHub Releases CDN for deployed audio files
+  const audio = new Audio(`https://github.com/OrPerets/digit-span/releases/download/audio-v1/${randomTrack}.wav`);
   audio.setAttribute('data-background-music', 'true'); // Add attribute to identify background music
   audio.loop = true;
   audio.volume = 0.5; // Set volume to 50%
