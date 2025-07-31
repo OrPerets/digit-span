@@ -562,7 +562,6 @@ const ExperimentFlow = () => {
     
     return (
       <div style={{ 
-        padding: '40px', 
         textAlign: 'center', 
         direction: 'rtl',
         minHeight: '100vh',
@@ -570,8 +569,8 @@ const ExperimentFlow = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f8fafc', // Clean light gray background
-        color: '#1e293b',
+        backgroundColor: '#ffffff',
+        color: '#000000',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -579,106 +578,43 @@ const ExperimentFlow = () => {
         bottom: 0,
         zIndex: 9999
       }}>
-        <style>
-          {`
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translateY(20px); }
-              to { opacity: 1; transform: translateY(0); }
+          <p style={{ 
+            fontSize: '24px', 
+            marginBottom: '40px',
+            lineHeight: '1.5',
+            color: '#000000',
+            fontWeight: 'normal',
+            margin: '0 0 40px 0'
+          }}>
+            {nextCondition.withMusic ? 
+              "כעת תתנסה במשימה זו עם מוזיקה" : 
+              "כעת תתנסה במשימה זו ללא מוזיקה"
             }
-          `}
-        </style>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '50px 40px',
-          borderRadius: '16px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          maxWidth: '600px',
-          border: '1px solid #e2e8f0',
-          animation: 'fadeIn 0.5s ease-out'
-        }}>
-          <div style={{
-            width: '80px',
-            height: '80px',
-            backgroundColor: '#10b981',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 30px auto',
-            fontSize: '40px'
-          }}>
-            ✓
-          </div>
-          
-          <h1 style={{ 
-            color: '#1e293b', 
-            marginBottom: '25px',
-            fontSize: '28px',
-            fontWeight: '600',
-            lineHeight: '1.2'
-          }}>
-            החלק הראשון הושלם בהצלחה!
-          </h1>
-          
-          <div style={{
-            backgroundColor: '#f1f5f9',
-            padding: '20px',
-            borderRadius: '12px',
-            marginBottom: '30px',
-            border: '1px solid #e2e8f0'
-          }}>
-            <p style={{ 
-              fontSize: '20px', 
-              marginBottom: '10px',
-              lineHeight: '1.5',
-              color: '#334155',
-              fontWeight: '500'
-            }}>
-              {nextCondition.withMusic ? 
-                "כעת תתנסה במשימה עם מוזיקה" : 
-                "כעת תתנסה במשימה בלי מוזיקה"
-              }
-            </p>
-            <p style={{ 
-              fontSize: '16px', 
-              color: '#64748b',
-              margin: 0
-            }}>
-              {nextCondition.withMusic ? 
-                "": ""
-              }
-            </p>
-          </div>
+          </p>
           
           <button 
             onClick={handleTransitionComplete}
             style={{
-              padding: '16px 32px',
+              padding: '15px 40px',
               fontSize: '18px',
-              fontWeight: '500',
-              backgroundColor: '#1e40af',
+              fontWeight: 'normal',
+              backgroundColor: '#3b4f8a',
               color: 'white',
               border: 'none',
-              borderRadius: '12px',
+              borderRadius: '25px',
               cursor: 'pointer',
-              minWidth: '200px',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              minWidth: '180px',
+              transition: 'all 0.2s ease'
             }}
             onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#1d4ed8';
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+              e.target.style.backgroundColor = '#2d3f73';
             }}
             onMouseOut={(e) => {
-              e.target.style.backgroundColor = '#1e40af';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+              e.target.style.backgroundColor = '#3b4f8a';
             }}
           >
-            המשך לחלק השני
+            התחל במשימה
           </button>
-        </div>
       </div>
     );
   }
