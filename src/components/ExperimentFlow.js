@@ -12,10 +12,9 @@ import {
   getExperimentData,
   updateExperimentData,
   addTaskResult,
-  clearExperimentData,
-  downloadExperimentData
+  clearExperimentData
 } from '../services/localExperimentData';
-import { saveExperimentState, loadExperimentState, clearExperimentState } from '../services/experimentState';
+import { saveExperimentState, clearExperimentState } from '../services/experimentState';
 import { playBackgroundMusic, stopBackgroundMusic } from '../utils/audioUtils';
 
 // Global experiment control - set to false to deactivate the experiment
