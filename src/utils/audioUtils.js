@@ -10,7 +10,7 @@ export const playBackgroundMusic = () => {
     existingAudio.remove();
   }
 
-  const randomTrack = Math.floor(Math.random() * 22) + 1;
+  const randomTrack = Math.floor(Math.random() * 5) + 1;
   console.log(`🎵 AudioUtils: Selected track ${randomTrack}`);
   
   const audio = new Audio(`/dudu/${randomTrack}.wav`);
@@ -54,6 +54,11 @@ export const playBackgroundMusic = () => {
           console.warn('🎵 AudioUtils: Audio file not found or not supported. Audio files may not be deployed.');
           console.warn('🎵 AudioUtils: Please ensure audio files are in public/dudu/ directory for local development.');
           console.warn('🎵 AudioUtils: For deployment, follow the instructions in AUDIO_DEPLOYMENT.md');
+          
+          // Show a user-friendly notification (optional)
+          if (typeof window !== 'undefined' && window.showNotification) {
+            window.showNotification('מוזיקת רקע לא זמינה - הניסוי ימשיך ללא מוזיקה', 'info');
+          }
         } else {
           console.error('🎵 AudioUtils: ❌ Error playing background music:', error);
         }

@@ -20,6 +20,33 @@ The deployment process automatically handles audio files:
 1. **During build**: The `deploy-audio.js` script copies audio files from `public/dudu/` to `build/dudu/`
 2. **Deployment**: Vercel serves the files from the build directory
 
+## For Netlify Deployment
+Netlify deployment requires manual audio file upload since files are not tracked in Git:
+
+### Option 1: Manual Upload (Recommended)
+1. Deploy your app to Netlify (audio files will be missing initially)
+2. In your Netlify dashboard, go to the "Deploys" tab
+3. Click on your latest deploy
+4. Go to "Functions" or "Files" tab
+5. Upload the audio files from `public/dudu/` to the `build/dudu/` directory
+6. Redeploy or trigger a new build
+
+### Option 2: Use Netlify CLI
+1. Install Netlify CLI: `npm install -g netlify-cli`
+2. Login: `netlify login`
+3. Deploy with files: `netlify deploy --prod --dir=build`
+
+### Option 3: Include in Git (Not Recommended for Large Files)
+1. Remove `public/dudu/*.wav` from `.gitignore`
+2. Add audio files to Git: `git add public/dudu/*.wav`
+3. Commit and push: `git commit -m "Add audio files" && git push`
+4. Netlify will automatically include them in the build
+
+### Current Behavior
+- The app will work without audio files (background music will be silent)
+- Users will see console warnings about missing audio files
+- The experiment functionality remains intact
+
 ## Manual Deployment Steps
 If you need to deploy manually:
 

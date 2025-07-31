@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Handle audio files - they need to be uploaded separately
+# since they're not in Git due to size constraints
+[[headers]]
+  for = "/dudu/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+# Redirect for audio files if they don't exist
+[[redirects]]
+  from = "/dudu/*"
+  to = "/audio-placeholder.html"
+  status = 404 
