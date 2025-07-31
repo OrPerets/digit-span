@@ -26,8 +26,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# audio files
-public/dudu/*.wav
+# audio files (uncomment to include in git for deployment)
+# public/dudu/*.wav
 
 # Local Netlify folder
 .netlify
