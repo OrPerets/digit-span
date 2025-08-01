@@ -670,7 +670,7 @@ const ExperimentFlow = () => {
             lineHeight: '1.6',
             color: '#333'
           }}>
-            שלום! כדי להתחיל בניסוי, אנא הזן את מספר הנבדק שלך
+            שלום! כדי להתחיל בניסוי, אנא הזן את מספר תעודת זהות
           </p>
           <form onSubmit={handleParticipantIdSubmit}>
             <input
