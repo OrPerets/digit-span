@@ -145,7 +145,8 @@ const generateDigitSpansForCondition = (condition, isTestMode = false, isFirstTa
 };
 
 const ExperimentFlow = () => {
-  const [stage, setStage] = useState('modeSelection'); // Changed initial stage to modeSelection
+  const [stage, setStage] = useState('participantId'); // Start with participant ID input
+  const [participantId, setParticipantId] = useState(''); // Store participant ID
   const [experimentMode, setExperimentMode] = useState(null); // 'test' or 'full'
   const [experimentId, setExperimentId] = useState(null);
   const [sequence, setSequence] = useState(null);
@@ -337,12 +338,13 @@ const ExperimentFlow = () => {
       
       console.log('Assigned sequence:', assignedSequence);
 
-      // Generate unique experiment ID
-      const newExperimentId = `${Date.now()}-${Math.random().toString(36).substr(2, 8)}`;
+      // Use participant ID as experiment ID (with timestamp for uniqueness)
+      const newExperimentId = `${participantId}-${Date.now()}`;
       
       // Initialize experiment data
       const initData = {
         experimentId: newExperimentId,
+        participantId: participantId,
         sequence: assignedSequence,
         experimentMode: mode,
         startTime: new Date().toISOString(),
@@ -362,6 +364,7 @@ const ExperimentFlow = () => {
       // Initialize local data storage
       initializeExperimentData(newExperimentId);
       updateExperimentData({ 
+        participantId: participantId,
         sequence: assignedSequence,
         experimentMode: mode
       });
@@ -375,11 +378,12 @@ const ExperimentFlow = () => {
     } catch (error) {
       console.error('Error starting experiment:', error);
       // Continue with local-only mode
-      const newExperimentId = `${Date.now()}-${Math.random().toString(36).substr(2, 8)}`;
+      const newExperimentId = `${participantId}-${Date.now()}`;
       const fallbackSequence = Math.random() < 0.5 ? 'A' : 'B';
       
       initializeExperimentData(newExperimentId);
       updateExperimentData({ 
+        participantId: participantId,
         sequence: fallbackSequence,
         experimentMode: mode
       });
@@ -390,7 +394,7 @@ const ExperimentFlow = () => {
       setStartTime(new Date().toISOString());
       setStage('instructions'); // Changed from 'consent' to 'instructions'
     }
-  }, []);
+  }, [participantId]);
 
   // Handle task completion
   const handleTaskComplete = useCallback(async (taskResults) => {
@@ -625,6 +629,91 @@ const ExperimentFlow = () => {
     );
   }
 
+  // Handle participant ID submission
+  const handleParticipantIdSubmit = (e) => {
+    e.preventDefault();
+    if (participantId.trim()) {
+      setStage('modeSelection');
+    }
+  };
+
+  if (stage === 'participantId') {
+    return (
+      <div style={{ 
+        padding: '40px', 
+        textAlign: 'center', 
+        direction: 'rtl',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          padding: '40px',
+          borderRadius: '12px',
+          border: '1px solid #dee2e6',
+          maxWidth: '500px',
+          width: '100%'
+        }}>
+          <h1 style={{ 
+            color: '#1E3A8A', 
+            marginBottom: '30px',
+            fontSize: '32px'
+          }}>
+            ניסוי Digit Span
+          </h1>
+          <p style={{ 
+            fontSize: '18px', 
+            marginBottom: '30px',
+            lineHeight: '1.6',
+            color: '#333'
+          }}>
+            שלום! כדי להתחיל בניסוי, אנא הזן את מספר הנבדק שלך
+          </p>
+          <form onSubmit={handleParticipantIdSubmit}>
+            <input
+              type="text"
+              value={participantId}
+              onChange={(e) => setParticipantId(e.target.value)}
+              placeholder="מספר נבדק"
+              style={{
+                width: '100%',
+                padding: '16px',
+                fontSize: '18px',
+                border: '2px solid #ddd',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                textAlign: 'center',
+                direction: 'ltr'
+              }}
+              required
+              autoFocus
+            />
+            <button 
+              type="submit"
+              disabled={!participantId.trim()}
+              style={{
+                padding: '16px 32px',
+                fontSize: '18px',
+                backgroundColor: participantId.trim() ? '#1E3A8A' : '#ccc',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: participantId.trim() ? 'pointer' : 'not-allowed',
+                minWidth: '200px',
+                transition: 'background-color 0.3s ease'
+              }}
+            >
+              המשך
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   if (stage === 'modeSelection') {
     return (
       <div style={{ 
@@ -637,45 +726,54 @@ const ExperimentFlow = () => {
         justifyContent: 'center',
         alignItems: 'center'
       }}>
-        <h1 style={{ marginBottom: '20px' }}>Digit Span</h1>
-        <p style={{ fontSize: '18px', marginBottom: '5px', lineHeight: '1.6' }}>
-          עופר - יש כאן אפשרות לבדיקה מהירה עם פחות סדרות מספרים עבורינו
-        </p>
-        <p style={{ fontSize: '18px', marginBottom: '30px', lineHeight: '1.6' }}>
-          כאשר נחבר את זה לניסוי המלא, יהיה גם את הבדיקה שמיעה כמו שיש בשאר הניסויים
-        </p>
-        <div style={{ display: 'flex', gap: '20px', flexDirection: 'column', alignItems: 'center' }}>
-          <button 
-            onClick={() => startExperiment('test')}
-            style={{
-              padding: '16px 32px',
-              fontSize: '18px',
-              backgroundColor: '#059669',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              minWidth: '200px'
-            }}
-          >
-            מצב בדיקה
-          </button>
-          
-          <button 
-            onClick={() => startExperiment('full')}
-            style={{
-              padding: '16px 32px',
-              fontSize: '18px',
-              backgroundColor: '#1E3A8A',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              minWidth: '200px'
-            }}
-          >
-            ניסוי מלא
-          </button>
+        <div style={{
+          backgroundColor: '#f8f9fa',
+          padding: '40px',
+          borderRadius: '12px',
+          border: '1px solid #dee2e6',
+          maxWidth: '600px',
+          width: '100%'
+        }}>
+          <h1 style={{ marginBottom: '20px', color: '#1E3A8A' }}>ברוך הבא, נבדק {participantId}</h1>
+          <p style={{ fontSize: '18px', marginBottom: '5px', lineHeight: '1.6' }}>
+            עופר - יש כאן אפשרות לבדיקה מהירה עם פחות סדרות מספרים עבורינו
+          </p>
+          <p style={{ fontSize: '18px', marginBottom: '30px', lineHeight: '1.6' }}>
+            כאשר נחבר את זה לניסוי המלא, יהיה גם את הבדיקה שמיעה כמו שיש בשאר הניסויים
+          </p>
+          <div style={{ display: 'flex', gap: '20px', flexDirection: 'column', alignItems: 'center' }}>
+            <button 
+              onClick={() => startExperiment('test')}
+              style={{
+                padding: '16px 32px',
+                fontSize: '18px',
+                backgroundColor: '#059669',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                minWidth: '200px'
+              }}
+            >
+              מצב בדיקה
+            </button>
+            
+            <button 
+              onClick={() => startExperiment('full')}
+              style={{
+                padding: '16px 32px',
+                fontSize: '18px',
+                backgroundColor: '#1E3A8A',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                minWidth: '200px'
+              }}
+            >
+              ניסוי מלא
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -931,19 +1029,13 @@ const ExperimentFlow = () => {
           <p style={{ fontSize: '24px', color: '#6B7280', marginBottom: '40px' }}>
             הניסוי הושלם בהצלחה
           </p>
-          {/* <button 
+          <button 
             onClick={() => {
-              // Download experiment data
-              try {
-                downloadExperimentData();
-              } catch (error) {
-                console.error('Error downloading data:', error);
-              }
-              
               // Reset for new participant
               clearExperimentData();
               clearExperimentState();
-              setStage('modeSelection'); // Changed to go back to mode selection
+              setStage('participantId'); // Start from participant ID input
+              setParticipantId(''); // Clear participant ID
               setExperimentId(null);
               setSequence(null);
               setExperimentMode(null);
@@ -957,11 +1049,12 @@ const ExperimentFlow = () => {
               color: 'white',
               border: 'none',
               borderRadius: '8px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              marginTop: '20px'
             }}
           >
-            הורד נתונים וחזור להתחלה
-          </button> */}
+            נבדק חדש
+          </button>
         </div>
       </div>
     );
