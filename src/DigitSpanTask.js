@@ -71,45 +71,29 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
       { id: "4b", digits: [5, 1, 8, 3, 9], length: 5 }
     ];
 
-    // Series A: Original 'a' sequences + random sequences with same length as corresponding 'b'
-    const seriesA = [];
-    originalA.forEach((item, index) => {
-      // Add original 'a' sequence
-      seriesA.push({
-        id: item.id,
-        digits: item.digits,
-        correct: [...item.digits].reverse()
+    // Main trials: Pair trials by length (2a, 2b, then 3a, 3b, then 4a, 4b)
+    // This follows standard digit span administration: both trials of same length before discontinue check
+    const mainTrials = [];
+    
+    for (let i = 0; i < originalA.length; i++) {
+      // Add 'a' sequence for this length
+      mainTrials.push({
+        id: originalA[i].id,
+        digits: originalA[i].digits,
+        correct: [...originalA[i].digits].reverse(),
+        length: originalA[i].digits.length
       });
       
-      // Add random sequence with same length as corresponding 'b'
-      const randomDigits = generateRandomDigits(originalB[index].length);
-      seriesA.push({
-        id: item.id.replace('a', 'a_random'),
-        digits: randomDigits,
-        correct: [...randomDigits].reverse()
+      // Add 'b' sequence for the same length  
+      mainTrials.push({
+        id: originalB[i].id,
+        digits: originalB[i].digits,
+        correct: [...originalB[i].digits].reverse(),
+        length: originalB[i].digits.length
       });
-    });
+    }
 
-    // Series B: Original 'b' sequences + random sequences with same length as corresponding 'a'  
-    const seriesB = [];
-    originalB.forEach((item, index) => {
-      // Add original 'b' sequence
-      seriesB.push({
-        id: item.id,
-        digits: item.digits,
-        correct: [...item.digits].reverse()
-      });
-      
-      // Add random sequence with same length as corresponding 'a'
-      const randomDigits = generateRandomDigits(originalA[index].length);
-      seriesB.push({
-        id: item.id.replace('b', 'b_random'),
-        digits: randomDigits,
-        correct: [...randomDigits].reverse()
-      });
-    });
-
-    return [...practice, ...training, ...seriesA, ...seriesB];
+    return [...practice, ...training, ...mainTrials];
   };
 
   // Generate default digit spans
@@ -160,20 +144,23 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
     }
   }, [currentPhase, onPhaseChange]);
 
-  // Function to check if task should end (2 consecutive failures at same length)
+  // Function to check if task should end (failure on both trials of same span length)
   const checkIfTaskShouldEnd = useCallback(() => {
     // In test mode, never end early - complete all trials
     if (testMode) {
       return false;
     }
     
-    // For each sequence length, check if there are 2 consecutive failures
-    for (const [, results] of Object.entries(passFailMap)) {
-      if (results.length >= 2) {
-        // Check last two results for this length
-        const lastTwo = results.slice(-2);
-        if (lastTwo.length === 2 && !lastTwo[0] && !lastTwo[1]) {
-          return true;
+    // Check if both trials of the current span length have failed
+    // According to digit span instructions: "Discontinue after failure on both trials of any item (e.g., 5a and 5b)"
+    for (const [lengthStr, results] of Object.entries(passFailMap)) {
+      const length = parseInt(lengthStr);
+      
+      // For lengths > 2 (main test items), check if we have exactly 2 results and both failed
+      if (length > 2 && results.length === 2) {
+        const [firstTrial, secondTrial] = results;
+        if (!firstTrial && !secondTrial) {
+          return true; // Both trials of this span length failed - discontinue
         }
       }
     }
@@ -267,13 +254,17 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
     const newTrialResults = [...trialResults, trialResult];
     setTrialResults(newTrialResults);
 
-    // Update pass/fail map
+    // Update pass/fail map - track results by sequence length
     const sequenceLength = currentTrial.digits.length;
     if (!passFailMap[sequenceLength]) {
       passFailMap[sequenceLength] = [];
     }
     passFailMap[sequenceLength].push(isCorrect);
     setPassFailMap({...passFailMap});
+
+    // Log trial completion for debugging
+    console.log(`Trial ${currentTrial.id} (length ${sequenceLength}): ${isCorrect ? 'PASS' : 'FAIL'}`);
+    console.log(`Results for length ${sequenceLength}:`, passFailMap[sequenceLength]);
 
     if (currentTrial.isPractice) {
       // For practice trials, show feedback and move to next trial
@@ -302,8 +293,18 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
       return;
     }
 
-    // Check if task should end
-    const shouldEnd = checkIfTaskShouldEnd();
+    // Check if we should discontinue - only after completing both trials of a span length
+    const currentLength = currentTrial.digits.length;
+    const trialsForCurrentLength = passFailMap[currentLength] || [];
+    const shouldCheckDiscontinue = trialsForCurrentLength.length === 2; // Both trials completed
+    
+    let shouldEnd = false;
+    if (shouldCheckDiscontinue) {
+      shouldEnd = checkIfTaskShouldEnd();
+      if (shouldEnd) {
+        console.log(`Task discontinued after both trials of length ${currentLength} failed`);
+      }
+    }
     
     if (shouldEnd) {
       const finalResults = calculateResults(newTrialResults);

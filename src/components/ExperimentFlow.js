@@ -95,44 +95,50 @@ const generateDigitSpansForCondition = (condition, isTestMode = false, isFirstTa
     { id: "4b", digits: [5, 1, 8, 3, 9], length: 5 }
   ];
 
+  // Main trials: Pair trials by length (2a, 2b, then 3a, 3b, then 4a, 4b)
+  // This follows standard digit span administration: both trials of same length before discontinue check
   let mainSequences = [];
 
   if (condition === 'seriesA') {
-    // Series A: Original 'a' sequences + random sequences with same length as corresponding 'b'
-    originalA.forEach((item, index) => {
-      // Add original 'a' sequence
+    // Series A: For each length, use original 'a' + random 'b' 
+    for (let i = 0; i < originalA.length; i++) {
+      // Add original 'a' sequence for this length
       mainSequences.push({
-        id: item.id,
-        digits: item.digits,
-        correct: [...item.digits].reverse()
+        id: originalA[i].id,
+        digits: originalA[i].digits,
+        correct: [...originalA[i].digits].reverse(),
+        length: originalA[i].digits.length
       });
       
-      // Add random sequence with same length as corresponding 'b'
-      const randomDigits = generateRandomDigits(originalB[index].length);
+      // Add random 'b' sequence with same length as corresponding 'b'
+      const randomDigits = generateRandomDigits(originalB[i].length);
       mainSequences.push({
-        id: item.id.replace('a', 'a_random'),
+        id: originalB[i].id.replace('b', 'b_random'),
         digits: randomDigits,
-        correct: [...randomDigits].reverse()
+        correct: [...randomDigits].reverse(),
+        length: randomDigits.length
       });
-    });
+    }
   } else {
-    // Series B or B_NO_MUSIC: Original 'b' sequences + random sequences with same length as corresponding 'a'
-    originalB.forEach((item, index) => {
-      // Add original 'b' sequence
+    // Series B: For each length, use original 'b' + random 'a'
+    for (let i = 0; i < originalB.length; i++) {
+      // Add random 'a' sequence with same length as corresponding 'a'
+      const randomDigits = generateRandomDigits(originalA[i].length);
       mainSequences.push({
-        id: item.id,
-        digits: item.digits,
-        correct: [...item.digits].reverse()
+        id: originalA[i].id.replace('a', 'a_random'),
+        digits: randomDigits,
+        correct: [...randomDigits].reverse(),
+        length: randomDigits.length
       });
       
-      // Add random sequence with same length as corresponding 'a'
-      const randomDigits = generateRandomDigits(originalA[index].length);
+      // Add original 'b' sequence for this length
       mainSequences.push({
-        id: item.id.replace('b', 'b_random'),
-        digits: randomDigits,
-        correct: [...randomDigits].reverse()
+        id: originalB[i].id,
+        digits: originalB[i].digits,
+        correct: [...originalB[i].digits].reverse(),
+        length: originalB[i].digits.length
       });
-    });
+    }
   }
 
   return [...practice, ...training, ...mainSequences];
