@@ -633,7 +633,7 @@ const ExperimentFlow = () => {
   const handleParticipantIdSubmit = (e) => {
     e.preventDefault();
     if (participantId.trim()) {
-      setStage('modeSelection');
+      startExperiment('full'); // Always start full experiment
     }
   };
 
@@ -677,7 +677,7 @@ const ExperimentFlow = () => {
               type="text"
               value={participantId}
               onChange={(e) => setParticipantId(e.target.value)}
-              placeholder="מספר נבדק"
+              placeholder="מספר תעודת זהות"
               style={{
                 width: '100%',
                 padding: '16px',
@@ -714,70 +714,7 @@ const ExperimentFlow = () => {
     );
   }
 
-  if (stage === 'modeSelection') {
-    return (
-      <div style={{ 
-        padding: '40px', 
-        textAlign: 'center', 
-        direction: 'rtl',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '40px',
-          borderRadius: '12px',
-          border: '1px solid #dee2e6',
-          maxWidth: '600px',
-          width: '100%'
-        }}>
-          <h1 style={{ marginBottom: '20px', color: '#1E3A8A' }}>ברוך הבא, נבדק {participantId}</h1>
-          <p style={{ fontSize: '18px', marginBottom: '5px', lineHeight: '1.6' }}>
-            עופר - יש כאן אפשרות לבדיקה מהירה עם פחות סדרות מספרים עבורינו
-          </p>
-          <p style={{ fontSize: '18px', marginBottom: '30px', lineHeight: '1.6' }}>
-            כאשר נחבר את זה לניסוי המלא, יהיה גם את הבדיקה שמיעה כמו שיש בשאר הניסויים
-          </p>
-          <div style={{ display: 'flex', gap: '20px', flexDirection: 'column', alignItems: 'center' }}>
-            <button 
-              onClick={() => startExperiment('test')}
-              style={{
-                padding: '16px 32px',
-                fontSize: '18px',
-                backgroundColor: '#059669',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                minWidth: '200px'
-              }}
-            >
-              מצב בדיקה
-            </button>
-            
-            <button 
-              onClick={() => startExperiment('full')}
-              style={{
-                padding: '16px 32px',
-                fontSize: '18px',
-                backgroundColor: '#1E3A8A',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                minWidth: '200px'
-              }}
-            >
-              ניסוי מלא
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   if (stage === 'consent') {
     return (
@@ -789,9 +726,7 @@ const ExperimentFlow = () => {
         <p style={{ fontSize: '16px', marginBottom: '30px' }}>
           הניסוי כולל שני חלקים עם משימת Digit Span - אחד עם מוזיקת רקע ואחד בלי.
         </p>
-        <p style={{ fontSize: '14px', marginBottom: '30px', color: '#666' }}>
-          מצב ניסוי: {experimentMode === 'test' ? 'מצב בדיקה' : 'ניסוי מלא'}
-        </p>
+
         <button 
           onClick={() => setStage('instructions')}
           style={{
@@ -958,7 +893,7 @@ const ExperimentFlow = () => {
     const isFirstTask = currentTaskIndex === 0;
     const digitSpans = generateDigitSpansForCondition(
       currentCondition.condition, 
-      experimentMode === 'test',
+      false, // Always use full experiment mode
       isFirstTask
     );
 
@@ -1006,7 +941,7 @@ const ExperimentFlow = () => {
           onPracticeComplete={handlePracticeComplete}
           showFullInstructions={false}
           digitDisplayTime={1000}
-          testMode={experimentMode === 'test'}
+          testMode={false}
           showTaskCompletion={currentTaskIndex === DIGIT_SPAN_SEQUENCES[sequence].length - 1}
         />
       </div>
