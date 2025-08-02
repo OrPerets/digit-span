@@ -167,18 +167,22 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
     return false;
   }, [passFailMap, testMode]);
 
-  // Function to calculate final results
+  // Function to calculate final results (excluding practice trials from scoring)
   const calculateResults = useCallback((allTrialResults) => {
-    const totalTrials = allTrialResults.length;
-    const correctTrials = allTrialResults.filter(trial => trial.isCorrect).length;
+    // Filter out practice trials for scoring calculations
+    const nonPracticeTrials = allTrialResults.filter(trial => !trial.isPractice);
+    const totalTrials = nonPracticeTrials.length;
+    const correctTrials = nonPracticeTrials.filter(trial => trial.isCorrect).length;
     const accuracy = totalTrials > 0 ? (correctTrials / totalTrials) * 100 : 0;
+
+    console.log(`Final results: ${correctTrials}/${totalTrials} correct (${accuracy.toFixed(1)}%) - Practice trials excluded from scoring`);
 
     return {
       totalTrials,
       correctTrials,
       accuracy: Math.round(accuracy * 10) / 10,
       direction: 'backward', // Add required direction field
-      trialResults: allTrialResults, // Changed from trialDetails to match schema
+      trialResults: allTrialResults, // Include all trials (practice + main) for data recording
       passFailMap,
       timestamp: new Date().toISOString(),
       taskType: 'digit-span-backward'
@@ -254,17 +258,8 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
     const newTrialResults = [...trialResults, trialResult];
     setTrialResults(newTrialResults);
 
-    // Update pass/fail map - track results by sequence length
-    const sequenceLength = currentTrial.digits.length;
-    if (!passFailMap[sequenceLength]) {
-      passFailMap[sequenceLength] = [];
-    }
-    passFailMap[sequenceLength].push(isCorrect);
-    setPassFailMap({...passFailMap});
-
     // Log trial completion for debugging
-    console.log(`Trial ${currentTrial.id} (length ${sequenceLength}): ${isCorrect ? 'PASS' : 'FAIL'}`);
-    console.log(`Results for length ${sequenceLength}:`, passFailMap[sequenceLength]);
+    console.log(`Trial ${currentTrial.id} (length ${currentTrial.digits.length}): ${isCorrect ? 'PASS' : 'FAIL'}${currentTrial.isPractice ? ' [PRACTICE - NOT COUNTED]' : ''}`);
 
     if (currentTrial.isPractice) {
       // For practice trials, show feedback and move to next trial
@@ -292,6 +287,15 @@ function DigitSpanTask({ digitSpans, onComplete, onPhaseChange, onPracticeComple
       }, 2000);
       return;
     }
+
+    // Update pass/fail map - track results by sequence length (ONLY for non-practice trials)
+    const sequenceLength = currentTrial.digits.length;
+    if (!passFailMap[sequenceLength]) {
+      passFailMap[sequenceLength] = [];
+    }
+    passFailMap[sequenceLength].push(isCorrect);
+    setPassFailMap({...passFailMap});
+    console.log(`Results for length ${sequenceLength}:`, passFailMap[sequenceLength]);
 
     // Check if we should discontinue - only after completing both trials of a span length
     const currentLength = currentTrial.digits.length;
