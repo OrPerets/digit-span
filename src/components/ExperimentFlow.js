@@ -211,6 +211,7 @@ const ExperimentFlow = () => {
     if (totalTrials === 0) return; // No digit-span results to send
 
     const digitSpanData = {
+      participantId: participantId, // Include the actual participant ID
       totalTrials,
       correctTrials,
       passFailMap,
@@ -241,7 +242,7 @@ const ExperimentFlow = () => {
       console.error('Error saving digit-span results:', error);
       throw error;
     }
-  }, [experimentMode, sequence]);
+  }, [experimentMode, sequence, participantId]);
 
   // Complete the experiment
   const completeExperimentFlow = useCallback(async () => {

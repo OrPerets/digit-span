@@ -187,6 +187,7 @@ app.post('/api/tasks', async (req, res) => {
 app.post('/api/digit-span/results', async (req, res) => {
   try {
     const {
+      participantId,
       totalTrials,
       correctTrials,
       passFailMap,
@@ -197,8 +198,13 @@ app.post('/api/digit-span/results', async (req, res) => {
       trialDetails = []
     } = req.body;
 
-    // Generate random participant ID for now
-    const participantId = `participant_${uuidv4().substring(0, 8)}`;
+    // Validate participant ID is provided
+    if (!participantId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Participant ID is required'
+      });
+    }
     
     // Calculate accuracy
     const accuracy = totalTrials > 0 ? (correctTrials / totalTrials) * 100 : 0;

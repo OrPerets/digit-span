@@ -31,6 +31,7 @@ export default async function handler(req, res) {
       console.log('Received digit-span results:', JSON.stringify(req.body, null, 2));
       
       const {
+        participantId,
         totalTrials,
         correctTrials,
         passFailMap,
@@ -42,10 +43,12 @@ export default async function handler(req, res) {
       } = req.body;
 
       // Validate required fields
-      if (totalTrials === undefined || totalTrials === null || 
+      if (!participantId || 
+          totalTrials === undefined || totalTrials === null || 
           correctTrials === undefined || correctTrials === null ||
           !passFailMap || !direction || !experimentMode) {
         console.error('Validation failed:', {
+          participantId,
           totalTrials,
           correctTrials,
           passFailMap: !!passFailMap,
@@ -56,6 +59,7 @@ export default async function handler(req, res) {
           success: false,
           message: 'Missing required fields',
           received: {
+            participantId,
             totalTrials,
             correctTrials,
             passFailMap: !!passFailMap,
@@ -64,9 +68,6 @@ export default async function handler(req, res) {
           }
         });
       }
-
-      // Generate random participant ID for now
-      const participantId = `participant_${uuidv4().substring(0, 8)}`;
       
       // Calculate accuracy
       const accuracy = totalTrials > 0 ? (correctTrials / totalTrials) * 100 : 0;
