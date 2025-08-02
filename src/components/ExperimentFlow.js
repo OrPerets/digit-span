@@ -964,32 +964,7 @@ const ExperimentFlow = () => {
           <p style={{ fontSize: '24px', color: '#6B7280', marginBottom: '40px' }}>
             הניסוי הושלם בהצלחה
           </p>
-          <button 
-            onClick={() => {
-              // Reset for new participant
-              clearExperimentData();
-              clearExperimentState();
-              setStage('participantId'); // Start from participant ID input
-              setParticipantId(''); // Clear participant ID
-              setExperimentId(null);
-              setSequence(null);
-              setExperimentMode(null);
-              setCurrentTaskIndex(0);
-              setShowInstructions(true);
-            }}
-            style={{
-              padding: '12px 24px',
-              fontSize: '16px',
-              backgroundColor: '#1E3A8A',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              marginTop: '20px'
-            }}
-          >
-            נבדק חדש
-          </button>
+         
         </div>
       </div>
     );
